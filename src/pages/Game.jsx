@@ -15,10 +15,9 @@ const Game = () => {
   }, []);
 
   const playGame = () => {
-    resetScore(); // Reset at the start of the game
+    resetScore();
 
     intervalRef.current = setInterval(() => {
-      // Get the latest score and update it
       const currentScore = getScore();
       setScore(currentScore + Math.floor(Math.random() * 10) + 10);
     }, 1000);
@@ -26,7 +25,13 @@ const Game = () => {
     setTimeout(() => {
       clearInterval(intervalRef.current);
       const finalScore = getScore();
-      navigate("/game-over", { state: { isEligible: finalScore >= 50 } });
+      if (finalScore >= 50) {
+        const token = Math.random().toString(36).substring(2); // Generate token
+        sessionStorage.setItem("gameToken", token); // Store token in session
+        navigate("/game-over", { state: { isEligible: true, token } });
+      } else {
+        navigate("/game-over", { state: { isEligible: false } });
+      }
     }, 5000);
   };
 
